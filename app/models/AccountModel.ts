@@ -5,7 +5,7 @@ import { encrypt } from "../libs/passGuard";
 
 const getAccount = async (body: AccountType) => {
   try {
-    const { username, password }: AccountType = body;
+    const { username, password }:AccountType = body;
     if (username && password) {
       const docRef = ref(db, "account");
       const query = await get(docRef);

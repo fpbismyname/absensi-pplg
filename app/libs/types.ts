@@ -7,5 +7,9 @@ interface AccountType{
     username: string;
     password: string;
 }
+interface Login{
+    username: string;
+    password: string;
+}
 
-export type {AccountType}
+export type {AccountType, Login}

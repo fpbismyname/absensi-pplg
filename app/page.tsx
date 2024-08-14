@@ -1,9 +1,11 @@
+import Link from "next/link";
 import React from "react"
 
-const Home:any = () =>{
+const Home:React.FC = () =>{
   return (
     <>
-      <h1>Hello World</h1>
+      <h1>Welcome</h1>
+      <Link href="/login">Login</Link>
     </>
   )
 }

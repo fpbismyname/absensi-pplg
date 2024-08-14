@@ -8,8 +8,8 @@ const login = async (req: NextRequest) => {
     const body: AccountType = await req.json();
     const Account = await getAccount(body);
     if (Account) {
-      const isValidAccount = decrypt(Account.password, body.password);
-      if (isValidAccount === body.password) {
+      const isValidAccount = decrypt(body.password, Account.password);
+      if (isValidAccount) {
         return NextResponse.json(
           {
             status: 200,
@@ -19,30 +19,37 @@ const login = async (req: NextRequest) => {
         );
       } else {
         return NextResponse.json(
-            {
-              status: 401,
-              message: "Invalid username or password",
-            },
-            { status: 401 }
-          );
+          {
+            status: 401,
+            message: "Invalid username or password",
+          },
+          { status: 401 }
+        );
       }
     } else {
-        return NextResponse.json(
-            {
-                status: 401,
-                message: "Invalid username or password",
+      return NextResponse.json(
+        {
+          status: 401,
+          message: "Invalid username or password",
         },
         { status: 401 }
       );
     }
   } catch (err) {
-    return NextResponse.json(
-      {
-        status: 500,
-        message: "Internal server error",
-      },
-      { status: 500 }
-    );
+    if (err instanceof SyntaxError) {
+      return NextResponse.json(
+        { status: 400, error: "Invalid body json format" },
+        { status: 400 }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          status: 500,
+          message: "Internal server error",
+        },
+        { status: 500 }
+      );
+    }
   }
 };
 
@@ -68,13 +75,20 @@ const register = async (req: NextRequest) => {
       );
     }
   } catch (err) {
-    return NextResponse.json(
-      {
-        status: 500,
-        message: "Internal server error",
-      },
-      { status: 500 }
-    );
+    if (err instanceof SyntaxError) {
+      return NextResponse.json(
+        { status: 400, error: "Invalid body json format" },
+        { status: 400 }
+      );
+    } else {
+      return NextResponse.json(
+        {
+          status: 500,
+          message: "Internal server error",
+        },
+        { status: 500 }
+      );
+    }
   }
 };
 

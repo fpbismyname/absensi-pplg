@@ -7,9 +7,13 @@ interface AccountType{
     username: string;
     password: string;
 }
-interface Login{
+type Login = {
     username: string;
     password: string;
 }
+type HttpResponse = {
+    status: string;
+    message: string;
+}
 
-export type {AccountType, Login}
+export type {AccountType, Login, HttpResponse}

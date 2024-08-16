@@ -8,8 +8,8 @@ interface AccountType{
     password: string;
 }
 type Login = {
-    username: string;
-    password: string;
+    username: string,
+    password: string
 }
 type HttpResponse = {
     status: string;

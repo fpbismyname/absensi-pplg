@@ -1,39 +1,53 @@
 "use client";
 import React, { FormEvent } from "react";
-import axios from "axios";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { Alert } from "../components/notif";
+import Link from "next/link"
 
 const LoginPage: React.FC = () => {
   const [loading, isLoading] = React.useState(false);
-  const router = useRouter();
+  const router = useRouter()
 
   const loginHandle = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const form = new FormData(e.currentTarget);
     const dataForm: any = Object.fromEntries(form);
+
     if (dataForm["username"] === "" || dataForm["password"] === "") {
       alert("Please fill in all fields");
     } else {
       try {
         isLoading(true);
-        const response = await axios.post("/api/account/login", dataForm);
+        const payload = JSON.stringify(dataForm);
+        const response = await fetch("/api/account/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: payload,
+        }).then((respone) => {
+          if (respone.ok) {
+            return respone.json();
+          } else if (respone.status === 401) {
+            throw new Error("Invalid credentials");
+          }
+        });
         if (response) {
-          Swal.fire({
-            title: "Login Success",
-            text: "You have been logged in successfully",
-            icon: "success"
-          }).then(()=>router.push('/'))
+          Alert({
+            title: "Login Berhasil",
+            text: "Silahkan melanjutkan proses absensi",
+            icon: "success",
+          })
         }
       } catch (err) {
-        if (axios.isAxiosError(err)) {
-          if (err.response && err.response.status === 401) {
-            Swal.fire({
-              title: "Error",
-              text: "Invalid username or password",
-              icon: "error"
-            })
-          }
+        if (err){
+          Alert({
+            title: "Login Gagal",
+            text: "Kombinasi username dan password tidak cocok",
+            icon: "error"
+          })
         }
       } finally {
         isLoading(false);
@@ -42,14 +56,14 @@ const LoginPage: React.FC = () => {
   };
   return (
     <>
-      <div className="flex flex-row min-h-[100vh] items-center w-3/12">
+      <div className="flex flex-row min-h-[100vh] items-center justify-center">
         <form
           onSubmit={loginHandle}
           method="POST"
-          className="flex flex-col gap-3 text-center bg-secondary p-10 rounded-xl text-wrap"
+          className="flex flex-col card-style"
         >
           <div className="d-flex flex-col mb-4">
-            <h1>Login</h1>
+            <h1><i className="bi bi-backpack2 mr-2"></i>Login</h1>
             <p className="text-xs font-normal">
               Login sekarang untuk melakukan absensi
             </p>
@@ -58,26 +72,29 @@ const LoginPage: React.FC = () => {
             type="text"
             name="username"
             placeholder="Masukan Username"
-            className="p-2 outline-none select-none rounded-xl focus:shadow-[0px_0px_5px_gray]"
+            className="input-style"
             autoComplete="off"
           />
           <input
             type="password"
             name="password"
             placeholder="Masukan Password"
-            className="p-2 outline-none select-none rounded-xl focus:shadow-[0px_0px_5px_gray]"
+            className="input-style"
           />
           <div className="flex flex-row justify-center">
             {loading ? (
-              <i className="bi bi-arrow-clockwise me-1 text-center animate-spin font-bold text-xl"></i>
+              <i className="bi bi-arrow-clockwise me-1 text-center animate-spin font-bold text-2xl loading-style"></i>
             ) : (
               <button
                 type="submit"
-                className="p-2 bg-primary rounded-xl hover:bg-black hover:text-secondary"
+                className="button-style"
               >
                 Login
               </button>
             )}
+          </div>
+          <div className="flex flex-col">
+            <p className="text-xs">Lupa password akun ? <a href="" className="hover:text-secondary underline transition-all">Hubungi Admin</a></p>
           </div>
         </form>
       </div>
